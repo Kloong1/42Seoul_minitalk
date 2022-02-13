@@ -6,18 +6,16 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 14:10:09 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/12 15:25:57 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/12 16:58:46 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include "../libft/libft.h"
+#include "client.h"
 
 #include <stdio.h>
 
-int server_response;
+t_conn_stat g_conn_stat;
 
 /* void convert_and_send_char(pid_t server_pid, char c)
  * {
@@ -43,27 +41,69 @@ int server_response;
  *     printf("\n");
  * } */
 
-void get_server_response(int signo)
+void handler_get_response(int signo)
 {
-	server_response = signo;
+	g_conn_stat.response = signo;
 }
 
-int connect(pid_t server_pid, char* msg)
+int wait_response(int signo, int maxtry, int usec)
 {
-	(void)msg;
+	int sleep_result;
+	int trycnt;
 
-	signal(SIGUSR1, get_server_response);
-	signal(SIGUSR2, get_server_response);
+	sleep_result = -1;
+	trycnt = 0;
+	while (g_conn_stat.response != signo && sleep_result != 0 && trycnt < maxtry)
+	{
+		sleep_result = usleep(usec);
+		trycnt++;
+	}
 
-	kill(server_pid, SIGUSR1);
+	if (sleep_result == 0 || trycnt == maxtry)
+		return (-1);
 
-	int sleep_suspended = -1;
-	while (server_response != SIGUSR1 && sleep_suspended != 0)
-		sleep_suspended = usleep(1000000);
+	return (0);
+}
 
-	printf("sleep_suspended = %d\n", sleep_suspended);
+int connect()
+{
+	signal(SIGUSR1, handler_get_response);
+	signal(SIGUSR2, handler_get_response);
 
-	return sleep_suspended;
+	kill(g_conn_stat.server_pid, SIGUSR1);
+
+	return (wait_response(SIGUSR1, 3, 1000000));
+}
+
+void init_conn_stat(pid_t server_pid, char* msg)
+{
+	g_conn_stat.server_pid = server_pid;
+	g_conn_stat.response = -1;
+	g_conn_stat.msg = msg;
+	g_conn_stat.msglen = strlen(msg);
+	g_conn_stat.msgidx = 0;
+}
+
+int send_msg_len()
+{
+	unsigned int bitmask;
+
+	bitmask = 1 << 31;
+	while (bitmask > 0)
+	{
+		if ((g_conn_stat.msglen & bitmask) == 0)
+			kill(g_conn_stat.server_pid, SIGUSR1);
+		else
+			kill(g_conn_stat.server_pid, SIGUSR2);
+		bitmask = bitmask >> 1;
+		usleep(100);
+	}
+
+	if (wait_response(SIGUSR1, 1, 10000) < 0)
+		return (-1);
+
+	//재송신 시도하는거 짜야함
+	return (0);
 }
 
 int main(int argc, char* args[])
@@ -71,10 +111,16 @@ int main(int argc, char* args[])
 	if (argc != 3)
 		return (1);
 
-	server_response = 0;
+	init_conn_stat(atoi(args[1]), args[1]);
 
-	if (connect(atoi(args[1]), args[2]) == 0)
+	if (connect() == -1)
 		return (1);
+
+	if (send_msg_len() == -1)
+		return (1);
+
+	/* if (send_msg() == -1)
+	 *     return (1); */
 
 	return (0);
 }
