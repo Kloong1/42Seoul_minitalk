@@ -6,39 +6,65 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 13:57:28 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/12 15:10:04 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/14 23:26:09 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <signal.h>
-#include <unistd.h>
+#include "server.h"
+
 #include <stdio.h>
 
-int flag = 0;
-
-void signal_handler(int signo, siginfo_t* siginfo, void* context)
-{
-	(void)context;
-
-	printf("signo = %d\n", signo);
-	if (signo == SIGUSR1)
-	{
-		usleep(100);
-		kill(siginfo->si_pid, SIGUSR1);
-	}
-}
+t_conn_stat g_conn_stat;
 
 int main()
 {
-	printf("%d\n", getpid());
+	printf("PID: %d\n", getpid());
 
-	struct sigaction sa_struct;
-	sa_struct.sa_flags = SA_SIGINFO;
-	sa_struct.sa_sigaction = signal_handler;
-	sigemptyset(&sa_struct.sa_mask);
+	init_conn_stat();
 
-	sigaction(SIGUSR1, &sa_struct, NULL);
-	sigaction(SIGUSR2, &sa_struct, NULL);
+	while (1)
+	{
+		listen(SIGUSR1);
 
-	while (1) pause();
+		if (recieve_msglen() != RESPONSE_SUCCESS)
+		{
+			printf("Recieve msglen error!\n");
+			init_conn_stat();
+			continue;
+		}
+
+		printf("msglen = %zu\n", g_conn_stat.msglen);
+
+		if (recieve_msg() != RESPONSE_SUCCESS)
+		{
+			printf("Recieve msg error!\n");
+			init_conn_stat();
+			continue;
+		}
+
+		for (int i = 0; i <1000; i++)
+			for (int j = 0; j <1000; j++)
+				for (int k = 0; k <1000; k++);
+
+		init_conn_stat();
+	}
+}
+
+void init_conn_stat()
+{
+	g_conn_stat.client_pid = 0;
+	g_conn_stat.client_sig = -1;
+	g_conn_stat.msg = NULL;
+	g_conn_stat.msglen = 0;
+	g_conn_stat.msgidx = 0;
+	g_conn_stat.sa_struct.sa_flags = SA_SIGINFO;
+	sigemptyset(&g_conn_stat.sa_struct.sa_mask);
+	set_sigaction(SIGUSR1, handler_listen);
+	set_sigaction(SIGUSR2, handler_listen);
+}
+
+void set_sigaction(int signo, void (*sighandler)(int, siginfo_t*, void*))
+{
+	g_conn_stat.sa_struct.sa_sigaction = sighandler;
+	sigaction(signo, &g_conn_stat.sa_struct, NULL);
 }
