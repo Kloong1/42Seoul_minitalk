@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 14:10:09 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/14 23:11:48 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/15 14:25:52 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void handler_get_response(int signo)
 void init_conn_stat(pid_t server_pid, char* msg)
 {
 	g_conn_stat.server_pid = server_pid;
-	g_conn_stat.response = -1;
+	g_conn_stat.response = 0;
 	g_conn_stat.msg = msg;
 	g_conn_stat.msglen = strlen(msg);
 	g_conn_stat.msgidx = 0;

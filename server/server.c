@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 13:57:28 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/14 23:26:09 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/15 16:13:21 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,20 +33,20 @@ int main()
 			continue;
 		}
 
-		printf("msglen = %zu\n", g_conn_stat.msglen);
+        printf("msglen = %zu\n", g_conn_stat.msglen);
 
-		if (recieve_msg() != RESPONSE_SUCCESS)
+        if (recieve_msg() != RESPONSE_SUCCESS)
 		{
 			printf("Recieve msg error!\n");
 			init_conn_stat();
 			continue;
 		}
 
-		for (int i = 0; i <1000; i++)
-			for (int j = 0; j <1000; j++)
-				for (int k = 0; k <1000; k++);
+		for(int i = 0; i < 1000; i++)
+			for (int j = 0; j < 1000; j++)
+				for (int k = 0; k < 1000; k++);
 
-		init_conn_stat();
+        init_conn_stat();
 	}
 }
 

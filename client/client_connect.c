@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 13:57:50 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/14 22:59:20 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/15 13:58:05 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,17 @@ int connect()
 	int response;
 
 	try_cnt = 0;
+	response = NOSIG;
 	while (try_cnt < 3)
 	{
 		kill(g_conn_stat.server_pid, SIGUSR1);
-		response = wait_response(SIGUSR1, NOSIG, 10);
+		response = wait_response(SIGUSR1, SIGUSR2, 10);
 		if (response == RESPONSE_SUCCESS || response == RESPONSE_FAIL)
 			return (response);
+		if (response == RESPONSE_RETRY)
+			return (wait_response(SIGUSR1, NOSIG, 30));
 		try_cnt++;
 	}
-
 	return (RESPONSE_FAIL);
 }
 

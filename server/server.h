@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:55:11 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/14 22:51:07 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/15 14:39:03 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ void listen(int client_sig);
 int recieve_msglen();
 void set_msglen_bit(int* idx);
 void set_msg_bit(int* idx);
+void set_bit(unsigned int* val, int idx);
 void retry_recieve(int* try_cnt, int* idx, int maxidx);
 void end_recieve_msglen();
 void handler_listen(int signo, siginfo_t* siginfo, void* context);

@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 18:12:15 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/14 22:04:57 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/15 16:13:23 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ t_conn_stat g_conn_stat;
 
 void listen(int client_sig)
 {
-
 	while(1)
 	{
 		pause();

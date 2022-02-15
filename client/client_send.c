@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 22:06:24 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/14 23:31:48 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/15 15:26:25 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,62 +16,61 @@
 
 t_conn_stat g_conn_stat;
 
-void send_bits_sig(unsigned int val, unsigned int bitlen)
+int send_bit_and_wait_response(unsigned int val, unsigned int bitidx)
 {
+	int try_cnt;
+	int response;
 	unsigned int bitmask;
 
-	bitmask = 1 << (bitlen - 1);
-	while (bitmask > 0)
+	try_cnt = 0;
+	bitmask = 1 << bitidx;
+	while(try_cnt < 3)
 	{
-		usleep(150);
 		if ((val & bitmask) == 0)
 			kill(g_conn_stat.server_pid, SIGUSR1);
 		else
 			kill(g_conn_stat.server_pid, SIGUSR2);
-		bitmask = bitmask >> 1;
-	}
-}
-
-int send_msglen()
-{
-	int try_cnt;
-	int response;
-
-	try_cnt = 0;
-	while(try_cnt < 3)
-	{
-		send_bits_sig(g_conn_stat.msglen, 32);
-		response = wait_response(SIGUSR1, SIGUSR2, 5);
+		response = wait_response(SIGUSR1, NOSIG, 1);
 		if (response == RESPONSE_SUCCESS || response == RESPONSE_FAIL)
 			return (response);
 		try_cnt++;
 	}
-
 	return (RESPONSE_FAIL);
+}
+
+int send_msglen()
+{
+	int response;
+	int bitidx;
+
+	bitidx = 31;
+	while (bitidx >= 0)
+	{
+		response = send_bit_and_wait_response(g_conn_stat.msglen, bitidx--);
+		if (response == RESPONSE_FAIL)
+			return (RESPONSE_FAIL);
+		usleep(150);
+	}
+	return (RESPONSE_SUCCESS);
 }
 
 int send_msg()
 {
-	int try_cnt;
 	int response;
+	int bitidx;
 
+	bitidx = 7;
 	while (g_conn_stat.msgidx < g_conn_stat.msglen)
 	{
-		try_cnt = 0;
-		/* printf("try cnt = %d msgidx = %d\n", try_cnt, g_conn_stat.msgidx); */
-		while(try_cnt < 3)
-		{
-			send_bits_sig(g_conn_stat.msg[g_conn_stat.msgidx], 8);
-			response = wait_response(SIGUSR1, SIGUSR2, 5);
-			if (response == RESPONSE_SUCCESS)
-				break;
-			if (response == RESPONSE_FAIL)
-				return (RESPONSE_FAIL);
-			try_cnt++;
-		}
-		if (try_cnt == 3)
+		response = send_bit_and_wait_response(g_conn_stat.msg[g_conn_stat.msgidx], bitidx--);
+		if (response == RESPONSE_FAIL)
 			return (RESPONSE_FAIL);
-		g_conn_stat.msgidx++;
+		if (bitidx < 0)
+		{
+			bitidx = 7;
+			g_conn_stat.msgidx++;
+		}
+		usleep(50);
 	}
 	return (RESPONSE_SUCCESS);
 }

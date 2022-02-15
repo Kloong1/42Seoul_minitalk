@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/12 15:42:53 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/14 23:01:55 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/15 14:00:26 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,6 @@ int send_msglen();
 int send_msg();
 void handler_get_response(int signo);
 int connect();
-int wait_response(int sig, int maxtry, int sec);
+int wait_response(int sig_success, int sig_retry, int sec);
 
 #endif
