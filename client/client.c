@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 14:10:09 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/15 14:25:52 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/16 13:01:07 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,6 @@
 
 t_conn_stat g_conn_stat;
 
-void handler_get_response(int signo)
-{
-	g_conn_stat.response = signo;
-}
-
 void init_conn_stat(pid_t server_pid, char* msg)
 {
 	g_conn_stat.server_pid = server_pid;
@@ -29,8 +24,9 @@ void init_conn_stat(pid_t server_pid, char* msg)
 	g_conn_stat.msg = msg;
 	g_conn_stat.msglen = strlen(msg);
 	g_conn_stat.msgidx = 0;
-	signal(SIGUSR1, handler_get_response);
-	signal(SIGUSR2, handler_get_response);
+	g_conn_stat.bitidx = 0;
+	signal(SIGUSR1, handler_connect);
+	signal(SIGUSR2, handler_wait_queue);
 }
 
 int main(int argc, char* args[])
@@ -42,16 +38,10 @@ int main(int argc, char* args[])
 
 	printf("PID: %d\n", getpid());
 
-	if (connect() != RESPONSE_SUCCESS)
+	if (connect() < 0)
 		return (1);
 
-	if (send_msglen() != RESPONSE_SUCCESS)
-		return (1);
-
-	printf("msglen done\n");
-
-	if (send_msg() != RESPONSE_SUCCESS)
-	    return (1);
+	send_msg();
 
 	return (0);
 }

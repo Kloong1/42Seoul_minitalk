@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 22:06:24 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/15 15:26:25 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/16 15:05:37 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,61 +16,49 @@
 
 t_conn_stat g_conn_stat;
 
-int send_bit_and_wait_response(unsigned int val, unsigned int bitidx)
+void handler_msglen(int signo)
 {
-	int try_cnt;
-	int response;
-	unsigned int bitmask;
-
-	try_cnt = 0;
-	bitmask = 1 << bitidx;
-	while(try_cnt < 3)
+	(void)signo;
+	if (g_conn_stat.bitidx == 0)
 	{
-		if ((val & bitmask) == 0)
-			kill(g_conn_stat.server_pid, SIGUSR1);
-		else
-			kill(g_conn_stat.server_pid, SIGUSR2);
-		response = wait_response(SIGUSR1, NOSIG, 1);
-		if (response == RESPONSE_SUCCESS || response == RESPONSE_FAIL)
-			return (response);
-		try_cnt++;
+		g_conn_stat.bitidx = 7;
+		signal(SIGUSR1, handler_msg);
+		signal(SIGUSR2, handler_msg);
+		send_bit_signal(g_conn_stat.msglen, 0);
+		return;
 	}
-	return (RESPONSE_FAIL);
+
+	send_bit_signal(g_conn_stat.msglen, g_conn_stat.bitidx--);
 }
 
-int send_msglen()
+void handler_msg(int signo)
 {
-	int response;
-	int bitidx;
-
-	bitidx = 31;
-	while (bitidx >= 0)
+	(void)signo;
+	usleep(50);
+	if (g_conn_stat.bitidx == 0)
 	{
-		response = send_bit_and_wait_response(g_conn_stat.msglen, bitidx--);
-		if (response == RESPONSE_FAIL)
-			return (RESPONSE_FAIL);
-		usleep(150);
+		g_conn_stat.bitidx = 7;
+		g_conn_stat.msgidx++;
+		send_bit_signal(g_conn_stat.msg[g_conn_stat.msgidx - 1], 0);
+		if (g_conn_stat.msgidx == g_conn_stat.msglen)
+			exit(1); //종료 함수
+		return;
 	}
-	return (RESPONSE_SUCCESS);
+
+	send_bit_signal(g_conn_stat.msg[g_conn_stat.msgidx], g_conn_stat.bitidx--);
 }
 
-int send_msg()
+void send_bit_signal(unsigned long val, unsigned int bitidx)
 {
-	int response;
-	int bitidx;
+	if ((val & (1 << bitidx)) == 0)
+		kill(g_conn_stat.server_pid, SIGUSR1);
+	else
+		kill(g_conn_stat.server_pid, SIGUSR2);
+}
 
-	bitidx = 7;
-	while (g_conn_stat.msgidx < g_conn_stat.msglen)
-	{
-		response = send_bit_and_wait_response(g_conn_stat.msg[g_conn_stat.msgidx], bitidx--);
-		if (response == RESPONSE_FAIL)
-			return (RESPONSE_FAIL);
-		if (bitidx < 0)
-		{
-			bitidx = 7;
-			g_conn_stat.msgidx++;
-		}
-		usleep(50);
-	}
-	return (RESPONSE_SUCCESS);
+void send_msg()
+{
+	handler_msglen(SIGUSR1);
+	while (1)
+		pause();
 }

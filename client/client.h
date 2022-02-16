@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/12 15:42:53 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/15 14:00:26 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/16 13:33:40 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,17 @@ typedef struct t_conn_stat
 	char* msg;
 	size_t msglen;
 	unsigned int msgidx;
+	unsigned int bitidx;
 } t_conn_stat;
 
 extern t_conn_stat g_conn_stat;
 
-int send_msglen();
-int send_msg();
-void handler_get_response(int signo);
+void send_msg();
+void send_bit_signal(unsigned long val, unsigned int bitidx);
+void handler_connect(int signo);
+void handler_wait_queue(int signo);
+void handler_msglen(int signo);
+void handler_msg(int signo);
 int connect();
-int wait_response(int sig_success, int sig_retry, int sec);
 
 #endif

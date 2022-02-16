@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 13:57:50 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/15 13:58:05 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/15 17:19:55 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,37 +19,32 @@ t_conn_stat g_conn_stat;
 int connect()
 {
 	int try_cnt;
-	int response;
 
 	try_cnt = 0;
-	response = NOSIG;
 	while (try_cnt < 3)
 	{
 		kill(g_conn_stat.server_pid, SIGUSR1);
-		response = wait_response(SIGUSR1, SIGUSR2, 10);
-		if (response == RESPONSE_SUCCESS || response == RESPONSE_FAIL)
-			return (response);
-		if (response == RESPONSE_RETRY)
-			return (wait_response(SIGUSR1, NOSIG, 30));
-		try_cnt++;
+		if (sleep(10) == 0)
+			try_cnt++;
+		if (g_conn_stat.response == SIGUSR1)
+			break;
 	}
-	return (RESPONSE_FAIL);
+	if (try_cnt == 3)
+		return (-1);
+	return (0);
 }
 
-int wait_response(int sig_success, int sig_retry, int sec)
+void handler_connect(int signo)
 {
-	int sleep_result;
+	g_conn_stat.response = signo;
+	g_conn_stat.bitidx = 31;
+	signal(SIGUSR1, handler_msglen);
+	signal(SIGUSR2, handler_msglen);
+}
 
-	sleep_result = sleep(sec);
-
-	if (sleep_result == 0)
-		return (RESPONSE_NORESP);
-	
-	if (g_conn_stat.response == sig_success)
-		return (RESPONSE_SUCCESS);
-
-	if (g_conn_stat.response == sig_retry)
-		return (RESPONSE_RETRY);
-
-	return (RESPONSE_FAIL);
+void handler_wait_queue(int signo)
+{
+	(void)signo;
+	if (sleep(30) == 0)
+		exit(1); //exit 처리 함수
 }

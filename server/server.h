@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:55:11 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/15 14:39:03 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/16 13:45:45 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct t_conn_stat
 	char* msg;
 	size_t msglen;
 	unsigned int msgidx;
+	int bitidx;
 	struct sigaction sa_struct;
 } t_conn_stat;
 
@@ -48,6 +49,7 @@ void retry_recieve(int* try_cnt, int* idx, int maxidx);
 void end_recieve_msglen();
 void handler_listen(int signo, siginfo_t* siginfo, void* context);
 void handler_msglen(int signo, siginfo_t* siginfo, void* context);
+void handler_msg(int signo, siginfo_t* siginfo, void* context);
 int recieve_msg();
 int recieve_msg_char();
 
