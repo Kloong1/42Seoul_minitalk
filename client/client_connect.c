@@ -6,17 +6,15 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 13:57:50 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/15 17:19:55 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/17 17:59:51 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-#include  <stdio.h>
-
 t_conn_stat g_conn_stat;
 
-int connect()
+int connect(void)
 {
 	int try_cnt;
 
