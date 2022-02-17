@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/12 15:42:53 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/17 18:26:25 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/17 23:10:27 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include <signal.h>
 # include <unistd.h>
 # include <stdlib.h>
-# include <string.h>
 # include "../libft/libft.h"
 
 typedef struct t_conn_stat
