@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 13:57:50 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/17 18:22:21 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/18 00:05:39 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,9 @@ int	connect(void)
 	while (try_cnt < 3)
 	{
 		kill(g_conn_stat.server_pid, SIGUSR1);
-		if (sleep(10) == 0)
-			try_cnt++;
-		if (g_conn_stat.response == SIGUSR1)
-			break ;
+		if (sleep(10) != 0 || g_conn_stat.response == SIGUSR1)
+			break;
+		try_cnt++;
 	}
 	if (try_cnt == 3)
 		return (-1);
@@ -43,9 +42,5 @@ void	handler_connect(int signo)
 void	handler_wait_queue(int signo)
 {
 	(void)signo;
-	if (sleep(30) == 0)
-	{
-		ft_putstr_fd("Connection failed. Exit.\n", 1);
-		exit(EXIT_FAILURE);
-	}
+	pause();
 }
