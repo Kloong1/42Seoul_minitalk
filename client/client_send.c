@@ -6,15 +6,15 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 22:06:24 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/17 18:00:12 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/17 18:23:20 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-t_conn_stat g_conn_stat;
+t_conn_stat	g_conn_stat;
 
-void handler_msglen(int signo)
+void	handler_msglen(int signo)
 {
 	(void)signo;
 	if (g_conn_stat.bitidx == 0)
@@ -23,12 +23,12 @@ void handler_msglen(int signo)
 		signal(SIGUSR1, handler_msg);
 		signal(SIGUSR2, handler_msg);
 		send_bit_signal(g_conn_stat.msglen, 0);
-		return;
+		return ;
 	}
 	send_bit_signal(g_conn_stat.msglen, g_conn_stat.bitidx--);
 }
 
-void handler_msg(int signo)
+void	handler_msg(int signo)
 {
 	(void)signo;
 	usleep(50);
@@ -38,13 +38,16 @@ void handler_msg(int signo)
 		g_conn_stat.msgidx++;
 		send_bit_signal(g_conn_stat.msg[g_conn_stat.msgidx - 1], 0);
 		if (g_conn_stat.msgidx == g_conn_stat.msglen)
-			exit(1); //종료 함수
-		return;
+		{
+			ft_putstr_fd("Finished sending message. Exit.\n", 1);
+			exit(EXIT_SUCCESS);
+		}
+		return ;
 	}
 	send_bit_signal(g_conn_stat.msg[g_conn_stat.msgidx], g_conn_stat.bitidx--);
 }
 
-void send_bit_signal(unsigned long val, unsigned int bitidx)
+void	send_bit_signal(unsigned long val, unsigned int bitidx)
 {
 	if ((val & (1 << bitidx)) == 0)
 		kill(g_conn_stat.server_pid, SIGUSR1);
@@ -52,7 +55,7 @@ void send_bit_signal(unsigned long val, unsigned int bitidx)
 		kill(g_conn_stat.server_pid, SIGUSR2);
 }
 
-void send_msg(void)
+void	send_msg(void)
 {
 	handler_msglen(SIGUSR1);
 	while (1)

@@ -6,17 +6,17 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 13:57:50 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/17 17:59:51 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/17 18:22:21 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-t_conn_stat g_conn_stat;
+t_conn_stat	g_conn_stat;
 
-int connect(void)
+int	connect(void)
 {
-	int try_cnt;
+	int	try_cnt;
 
 	try_cnt = 0;
 	while (try_cnt < 3)
@@ -25,14 +25,14 @@ int connect(void)
 		if (sleep(10) == 0)
 			try_cnt++;
 		if (g_conn_stat.response == SIGUSR1)
-			break;
+			break ;
 	}
 	if (try_cnt == 3)
 		return (-1);
 	return (0);
 }
 
-void handler_connect(int signo)
+void	handler_connect(int signo)
 {
 	g_conn_stat.response = signo;
 	g_conn_stat.bitidx = 31;
@@ -40,9 +40,12 @@ void handler_connect(int signo)
 	signal(SIGUSR2, handler_msglen);
 }
 
-void handler_wait_queue(int signo)
+void	handler_wait_queue(int signo)
 {
 	(void)signo;
 	if (sleep(30) == 0)
-		exit(1); //exit 처리 함수
+	{
+		ft_putstr_fd("Connection failed. Exit.\n", 1);
+		exit(EXIT_FAILURE);
+	}
 }

@@ -6,7 +6,7 @@
 #    By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/10 14:17:06 by yohkim            #+#    #+#              #
-#    Updated: 2022/02/10 14:23:43 by yohkim           ###   ########.fr        #
+#    Updated: 2022/02/17 17:01:35 by yohkim           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,26 +14,25 @@ CC=gcc
 CFLAGS=-Wextra -Wall -Werror
 NAME=minitalk
 
-SERVER_SRCS=server.c
-CLIENT_SRCS=client.c
-
-OBJS=$(SRCS:.c=.o)
+SERVER_DIR=./server
+CLIENT_DIR=./client
+LIBFT_DIR=./libft
 
 all : $(NAME)
 
-$(NAME) : $(OBJS)
-	cd ./libft && $(MAKE)
-
-%.o : %.c
-	$(CC) $(CFLAGS) -c $^ -o $@
+$(NAME) :
+	cd $(LIBFT_DIR) && $(MAKE)
+	cd $(CLIENT_DIR) && $(MAKE)
+	cd $(SERVER_DIR) && $(MAKE)
 
 clean : 
-	rm -rf $(OBJS) $(BONUS_OBJS)
+	cd $(LIBFT_DIR) && $(MAKE) clean
+	cd $(CLIENT_DIR) && $(MAKE) clean
+	cd $(SERVER_DIR) && $(MAKE) clean
 
 fclean : clean
-	rm -rf $(NAME)
+	cd $(LIBFT_DIR) && $(MAKE) fclean
+	cd $(CLIENT_DIR) && $(MAKE) fclean
+	cd $(SERVER_DIR) && $(MAKE) fclean
 
 re: fclean all
-
-bonus: $(NAME) $(BONUS_OBJS)
-	ar -rc $(NAME) $(BONUS_OBJS)
