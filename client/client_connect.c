@@ -6,7 +6,7 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 13:57:50 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/18 00:05:39 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/18 00:25:34 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	connect(void)
 	{
 		kill(g_conn_stat.server_pid, SIGUSR1);
 		if (sleep(10) != 0 || g_conn_stat.response == SIGUSR1)
-			break;
+			break ;
 		try_cnt++;
 	}
 	if (try_cnt == 3)
