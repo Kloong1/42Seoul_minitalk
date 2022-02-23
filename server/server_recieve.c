@@ -6,20 +6,18 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 20:01:19 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/17 23:06:40 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/22 15:52:11 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
-
-t_conn_stat	g_conn_stat;
 
 void	handler_msglen(int signo, siginfo_t *siginfo, void *context)
 {
 	(void)context;
 	if (g_conn_stat.client_pid != siginfo->si_pid)
 	{
-		enqueue_client(siginfo->si_pid);
+		kill(siginfo->si_pid, SIGUSR2);
 		return ;
 	}
 	if (signo == SIGUSR2)
@@ -38,7 +36,7 @@ void	handler_msg(int signo, siginfo_t *siginfo, void *context)
 	(void)context;
 	if (g_conn_stat.client_pid != siginfo->si_pid)
 	{
-		enqueue_client(siginfo->si_pid);
+		kill(siginfo->si_pid, SIGUSR2);
 		return ;
 	}
 	if (signo == SIGUSR2)
@@ -58,14 +56,6 @@ void	handler_msg(int signo, siginfo_t *siginfo, void *context)
 		return ;
 	}
 	kill(g_conn_stat.client_pid, SIGUSR1);
-}
-
-void	enqueue_client(pid_t client_pid)
-{
-	if (is_queue_full())
-		return ;
-	enqueue(client_pid);
-	kill(client_pid, SIGUSR2);
 }
 
 void	ready_to_recieve_msg(void)

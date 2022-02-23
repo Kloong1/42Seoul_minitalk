@@ -6,7 +6,7 @@
 #    By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/10 14:17:06 by yohkim            #+#    #+#              #
-#    Updated: 2022/02/17 17:01:35 by yohkim           ###   ########.fr        #
+#    Updated: 2022/02/22 16:35:22 by yohkim           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,14 @@ all : $(NAME)
 $(NAME) :
 	cd $(LIBFT_DIR) && $(MAKE)
 	cd $(CLIENT_DIR) && $(MAKE)
+	cd $(SERVER_DIR) && $(MAKE)
+
+client_binary :
+	cd $(LIBFT_DIR) && $(MAKE)
+	cd $(CLIENT_DIR) && $(MAKE)
+
+server_binary :
+	cd $(LIBFT_DIR) && $(MAKE)
 	cd $(SERVER_DIR) && $(MAKE)
 
 clean : 

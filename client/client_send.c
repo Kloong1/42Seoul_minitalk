@@ -6,17 +6,16 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 22:06:24 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/17 18:23:20 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/22 16:05:55 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-t_conn_stat	g_conn_stat;
-
 void	handler_msglen(int signo)
 {
 	(void)signo;
+	usleep(50);
 	if (g_conn_stat.bitidx == 0)
 	{
 		g_conn_stat.bitidx = 7;

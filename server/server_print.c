@@ -6,13 +6,11 @@
 /*   By: yohkim <42.4.yohkim@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/17 17:35:32 by yohkim            #+#    #+#             */
-/*   Updated: 2022/02/17 18:34:43 by yohkim           ###   ########.fr       */
+/*   Updated: 2022/02/22 16:39:02 by yohkim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
-
-t_conn_stat	g_conn_stat;
 
 void	print_pid(pid_t pid)
 {
@@ -32,5 +30,5 @@ void	print_msg(void)
 {
 	ft_putstr_fd("Client message\n", 1);
 	ft_putstr_fd(g_conn_stat.msg, 1);
-	ft_putstr_fd("\n", 1);
+	ft_putstr_fd("\n\n", 2);
 }
